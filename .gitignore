@@ -1,0 +1,13 @@
+# Maven
+target/
+# Eclipse
+.classpath 
+.metadata 
+.project 
+*.launch 
+bin/ 
+.externalToolBuilders/ 
+.settings/
+# Project specific
+doc/
+local/

@@ -1,0 +1,253 @@
+openapi: 3.0.2
+info:
+  title: IngManager
+  version: 1.0.0
+  description: ING CRUD service.
+servers:
+  - url: 'http://127.0.0.1:20580/ing/v1.0.0'
+    description: local
+  - url: 'http://10.129.160.189:20580/ing/v1.0.0'
+    description: dev
+  - url: 'http://10.129.171.140/ing/v1.0.0'
+    description: pre
+paths:
+  /accounts:
+    get:
+      tags:
+        - accounts
+      summary: Retrieve accounts
+      description: Operation used to retrieve accounts.
+      operationId: accounts
+      responses:
+        '200':
+          $ref: '#/components/responses/AccountsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /transactions:
+    get:
+      tags:
+        - transactions
+      summary: Retrieve transactions
+      description: Operation used to retrieve transactions.
+      operationId: transactions
+      responses:
+        '200':
+          $ref: '#/components/responses/TransactionsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+components:
+  responses:
+    Success:
+      description: In case of successful execution of an operation
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Response'
+          example:
+            code: 200
+            message: OK
+    BadRequest:
+      description: 'Bad request, if some mandatory parameters are missed or are not correct'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Response'
+          example:
+            code: 400
+            message: Bad request
+            details:
+              description: missing mandatory fields
+    InternalError:
+      description: >-
+        Internal server error, if an unexpected error occurs inside the gateway
+        or there is a communication problem with DB
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Response'
+          examples:
+            generic:
+              description: Error with generic description
+              value:
+                code: 500
+                message: Internal server error
+                details:
+                  description: network problems
+            internal_code:
+              description: Error with internal code
+              value:
+                code: 500
+                message: Internal server error
+                details:
+                  internal_code: 10
+    AccountsResponse:
+      description: Accounts list
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AccountsResponse'
+          example:
+            code: 200
+            message: OK
+            accountsList:
+              - id: 1
+                update: 3
+                name: 2
+                product: Consumer
+                status: r.
+                type: 1
+                balance: 1
+    TransactionsResponse:
+      description: Transactions list
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TransactionsResponse'
+          example:
+            code: 200
+            message: OK
+            accountsList:
+              - id: 1
+                accountId: 3
+                status: 2
+                currency: Consumer
+                amount: 1
+                update: r.
+                description: des
+  schemas:
+    Response:
+      type: object
+      description: Generic response object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          description: HTTP status code
+        message:
+          type: string
+          description: HTTP status message
+        details:
+          description: 'Detailed information about response, as map key-value, if available'
+          additionalProperties:
+            type: string
+    AccountsResponse:
+      allOf:
+        - $ref: '#/components/schemas/Response'
+        - type: object
+          description: Response containing the list of accounts
+          properties:
+            accountsList:
+              type: array
+              items:
+                $ref: '#/components/schemas/AccountRecord'
+    TransactionsResponse:
+      allOf:
+        - $ref: '#/components/schemas/Response'
+        - type: object
+          description: Response containing the list of transaction
+          properties:
+            transactionsList:
+              type: array
+              items:
+                $ref: '#/components/schemas/TransactionRecord'
+    AccountRecord:
+      type: object
+      description: Account entry
+      properties:
+        id:
+          type: string
+          description: id account
+        update:
+          type: string
+          format: int64
+          description: updated account
+        name:
+          type: string
+          format: int64
+          description: name account
+        product:
+          type: string
+          description: product account
+        status:
+          type: string
+          description: status account
+        typeAccount:
+          type: string
+          description: type account
+        balance:
+          type: string
+          description: balance account
+    TransactionRecord:
+      type: object
+      description: Transaction entry
+      properties:
+        id:
+          type: string
+          description: id transaction
+        accountId:
+          type: string
+          description: accountId
+        exchangeRate:
+          type: object
+          description: exchangeRate
+          properties:
+            currencyFrom:
+              type: string
+              description: currencyFrom transaction
+            currencyTo:
+              type: string
+              description: currencyTo transaction
+            rate:
+              type: string
+              description: rate transaction
+        originalAmount:
+          type: object
+          description: originalAmount transaction
+          properties:
+            amount:
+              type: string
+              description: amount transaction
+            currency:
+              type: string
+              description: currency transaction
+        creditor:
+          type: object
+          description: creditor
+          properties:
+            maskedPan:
+              type: string
+              description: maskedPan 
+            name:
+              type: string
+              description: creditor name 
+        debtor:
+          type: object
+          description: debtor
+          properties:
+            maskedPan:
+              type: string
+              description: maskedPan 
+            name:
+              type: string
+              description: debitor name
+        status:
+          type: string
+          description: status transaction
+        currency:
+          type: string
+          description: currency
+        amount:
+          type: string
+          description: amount
+        update:
+          type: string
+          description: update
+        description:
+          type: string
+          description: description
